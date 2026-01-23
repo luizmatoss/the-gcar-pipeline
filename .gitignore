@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+data/
+logs/
+
+dbt/target/
+dbt/logs/
+dbt/.user.yml
+dbt/*.duckdb
+
+.DS_Store
