@@ -1,0 +1,7 @@
+greencar_local:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'greencar.duckdb'
+      threads: 4

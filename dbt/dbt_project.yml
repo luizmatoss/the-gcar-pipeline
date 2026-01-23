@@ -10,9 +10,13 @@ clean-targets: ['target', 'dbt_packages']
 
 models:
   greencar:
+    +enabled: true
     bronze:
+      +enabled: true
       +materialized: view
     silver:
+      +enabled: true
       +materialized: view
     gold:
+      +enabled: true
       +materialized: table

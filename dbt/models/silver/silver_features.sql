@@ -1,11 +1,14 @@
+{{ config(materialized='view') }}
+
+with src as (
+  select * from {{ ref('bronze_features') }}
+)
 select
-  initcap(manufacturer) as manufacturer,
-  vehicle_range as "range",
+  upper(substr(manufacturer, 1, 1)) || lower(substr(manufacturer, 2)) as manufacturer,
+  -- se você não tem range no bronze_features, mantemos null por enquanto
+  null::varchar as vehicle_range,
   feature_name,
   feature_value,
-  case
-    when lower(section) like 'interior%' then 'interior'
-    when lower(section) like 'entertainment%' then 'entertainment'
-    else lower(section)
-  end as category
-from {{ ref('bronze_features') }}
+  lower(section) as category
+from src
+where lower(section) in ('interior features', 'entertainment')
