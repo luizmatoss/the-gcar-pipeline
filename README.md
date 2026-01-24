@@ -83,6 +83,41 @@ curl -X POST "http://localhost:8000/scrape" \
    dbt test --profiles-dir .
    ```
 
+## Testing and CI
+
+### Fixtures
+
+This project uses test fixtures to ensure CI reliability without depending on external data sources. Fixtures are stored in `data/fixtures/` and contain sample data for:
+
+- `features_test.jsonl`: Sample vehicle features data.
+- `summary_test.jsonl`: Sample vehicle summary data.
+
+These fixtures mirror the schema of real scraped data but with controlled, consistent content.
+
+### CI Pipeline
+
+The GitHub Actions CI pipeline runs on every push/PR to `main`:
+
+1. **Unit Tests**: Runs Python unit tests with pytest.
+2. **DBT Build**: Uses fixtures to build and test DBT models (bronze, silver, gold layers).
+3. **Data Quality**: Validates schemas and runs automated tests defined in `schema.yml`.
+
+To run CI locally:
+
+```bash
+# Unit tests
+pytest tests/ -v
+
+# DBT with fixtures
+cd dbt
+dbt build --profiles-dir . --vars '{"raw_features_glob":"../data/fixtures/features_test.jsonl","raw_summary_glob":"../data/fixtures/summary_test.jsonl"}'
+```
+
+### Local vs CI Differences
+
+- **Local**: Uses real scraped data from `data/raw/` (requires scraping first).
+- **CI**: Uses fixtures for fast, reliable testing without external dependencies.
+
 ## Project Structure
 
 ```

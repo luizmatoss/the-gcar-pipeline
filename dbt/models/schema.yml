@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: bronze_features
+    description: Raw features data from scraping
+    columns:
+      - name: manufacturer
+        tests:
+          - not_null
+      - name: vehicle_range
+        tests:
+          - not_null
+      - name: feature_name
+        tests:
+          - not_null
+      - name: section
+        tests:
+          - not_null
+
+  - name: bronze_summary
+    description: Raw summary data from scraping
+    columns:
+      - name: manufacturer
+        tests:
+          - not_null
+      - name: vehicle_range
+        tests:
+          - not_null
+      - name: summary_key
+        tests:
+          - not_null
+      - name: summary_value
+        tests:
+          - not_null
+
+  - name: silver_features
+    description: Cleaned and normalized features data
+    columns:
+      - name: manufacturer
+        tests:
+          - not_null
+      - name: feature_name
+        tests:
+          - not_null
+      - name: category
+        tests:
+          - not_null
+
+  - name: silver_summary
+    description: Cleaned and normalized summary data
+    columns:
+      - name: manufacturer
+        tests:
+          - not_null
+      - name: vehicle_range
+        tests:
+          - not_null
+      - name: summary_key
+        tests:
+          - not_null
+      - name: summary_value
+        tests:
+          - not_null
+
+  - name: vehicle_features
+    description: Aggregated vehicle features for consumption
+    columns:
+      - name: manufacturer
+        tests:
+          - not_null
+      - name: feature_name
+        tests:
+          - not_null
