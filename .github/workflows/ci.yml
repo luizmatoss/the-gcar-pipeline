@@ -28,6 +28,16 @@ jobs:
       run: |
         python -m pytest tests/ -v
 
+    - name: List fixtures
+      run: |
+        ls -la data/fixtures
+
+    - name: Print bronze_features.sql (source)
+      run: |
+        cd dbt
+        echo "==== bronze_features.sql (repo) ===="
+        sed -n '1,120p' models/bronze/bronze_features.sql
+
     - name: Run DBT build (with fixtures)
       run: |
         cd dbt
