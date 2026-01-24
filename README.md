@@ -122,6 +122,15 @@ Or with verbose output:
 pytest tests/ -v
 ```
 
+### DBT Testing
+
+For local DBT testing with fixtures:
+
+```bash
+cd dbt
+dbt build --profiles-dir . --vars '{"raw_features_glob":"../data/fixtures/features_test.jsonl","raw_summary_glob":"../data/fixtures/summary_test.jsonl"}'
+```
+
 ## Next Steps
 
 - Add API authentication.
