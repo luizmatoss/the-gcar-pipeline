@@ -13,5 +13,5 @@ select
   vehicle_range,
   feature_name,
   feature_value,
-  coalesce(section, category) as section
+  section
 from src
