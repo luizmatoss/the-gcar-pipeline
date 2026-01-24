@@ -39,10 +39,13 @@ models:
       - name: manufacturer
         tests:
           - not_null
+      - name: vehicle_range
+        tests:
+          - not_null
       - name: feature_name
         tests:
           - not_null
-      - name: category
+      - name: section
         tests:
           - not_null
 
@@ -62,12 +65,28 @@ models:
         tests:
           - not_null
 
-  - name: vehicle_features
-    description: Aggregated vehicle features for consumption
+  - name: vehicle_summary
+    description: Aggregated vehicle summary for consumption
     columns:
       - name: manufacturer
         tests:
           - not_null
-      - name: feature_name
+      - name: range
+        tests:
+          - not_null
+      - name: summary_key
+        tests:
+          - not_null
+      - name: summary_value
+        tests:
+          - not_null
+
+  - name: data_quality_report
+    description: Data quality metrics for gold tables
+    columns:
+      - name: table_name
+        tests:
+          - not_null
+      - name: total_rows
         tests:
           - not_null

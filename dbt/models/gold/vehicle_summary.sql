@@ -3,7 +3,6 @@
 select
   manufacturer,
   vehicle_range as range,
-  feature_name,
-  feature_value,
-  section
-from {{ ref('silver_features') }};
+  summary_key,
+  summary_value
+from {{ ref('silver_summary') }};
