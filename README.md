@@ -1,5 +1,7 @@
 # TLA Green.Car Pipeline
 
+[![CI](https://github.com/luizmatoss/tla-greencar-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/luizmatoss/tla-greencar-pipeline/actions/workflows/ci.yml)
+
 This project is a data pipeline for scraping and processing electric vehicle information from Green.Car. It collects vehicle features and summaries from a specific URL, stores raw data, and transforms it into analytical layers using DBT with DuckDB.
 
 ## Architecture
