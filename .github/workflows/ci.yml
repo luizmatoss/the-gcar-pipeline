@@ -32,5 +32,15 @@ jobs:
       run: |
         cd dbt
         dbt deps --profiles-dir .
-        dbt build --profiles-dir . \
+        dbt run --profiles-dir . \
+          --select bronze.bronze_features bronze.bronze_summary silver.silver_features silver.silver_summary gold.vehicle_features \
           --vars '{"raw_features_glob":"../data/fixtures/features_test.jsonl","raw_summary_glob":"../data/fixtures/summary_test.jsonl"}'
+
+    - name: Show compiled bronze_features (debug)
+      if: always()
+      run: |
+        cd dbt
+        echo "=== Compiled bronze_features.sql ==="
+        sed -n '1,80p' target/compiled/greencar/models/bronze/bronze_features.sql || echo "File not found"
+        echo "=== Compiled bronze_summary.sql ==="
+        sed -n '1,80p' target/compiled/greencar/models/bronze/bronze_summary.sql || echo "File not found"
