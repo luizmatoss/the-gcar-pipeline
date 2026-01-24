@@ -5,4 +5,4 @@ select
   vehicle_range as range,
   summary_key,
   summary_value
-from {{ ref('silver_summary') }};
+from {{ ref('silver_summary') }}

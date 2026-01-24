@@ -6,4 +6,4 @@ select
   feature_name,
   feature_value,
   section
-from {{ ref('silver_features') }};
+from {{ ref('silver_features') }}

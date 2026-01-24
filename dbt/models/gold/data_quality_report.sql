@@ -23,4 +23,4 @@ vs as (
 
 select * from vf
 union all
-select * from vs;
+select * from vs
