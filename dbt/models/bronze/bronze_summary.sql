@@ -13,4 +13,4 @@ select
   vehicle_range,
   summary_key,
   summary_value
-from src;
+from src
