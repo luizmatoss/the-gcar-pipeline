@@ -39,12 +39,14 @@ jobs:
         sed -n '1,120p' models/bronze/bronze_features.sql
 
     - name: Run DBT build (with fixtures)
+      env:
+        RAW_FEATURES_GLOB: ../data/fixtures/features_test.jsonl
+        RAW_SUMMARY_GLOB: ../data/fixtures/summary_test.jsonl
       run: |
         cd dbt
         dbt deps --profiles-dir .
         dbt run --profiles-dir . \
-          --select bronze.bronze_features bronze.bronze_summary silver.silver_features silver.silver_summary gold.vehicle_features \
-          --vars '{"raw_features_glob":"../data/fixtures/features_test.jsonl","raw_summary_glob":"../data/fixtures/summary_test.jsonl"}'
+          --select bronze.bronze_features bronze.bronze_summary silver.silver_features silver.silver_summary gold.vehicle_features
 
     - name: Show compiled bronze_features (debug)
       if: always()
