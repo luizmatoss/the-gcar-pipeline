@@ -141,3 +141,5 @@ dbt build --profiles-dir . --vars '{"raw_features_glob":"../data/fixtures/featur
 ## License
 
 [Add license here, e.g., MIT]
+
+Updated on 24 January 2026 to trigger GitHub Actions.
