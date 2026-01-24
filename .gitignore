@@ -5,6 +5,7 @@ __pycache__/
 *.pyd
 
 data/
+!data/fixtures/
 logs/
 
 dbt/target/
