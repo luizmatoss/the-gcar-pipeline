@@ -1,6 +1,6 @@
 # TLA Green.Car Pipeline
 
-[![CI](https://github.com/luizmatoss/tla-greencar-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/luizmatoss/tla-greencar-pipeline/actions/workflows/ci.yml)
+[![CI](https://github.com/luizmatoss/the-gcar-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/luizmatoss/the-gcar-pipeline/actions/workflows/ci.yml)
 
 This project is a data pipeline for scraping and processing electric vehicle information from Green.Car. It collects vehicle features and summaries from a specific URL, stores raw data, and transforms it into analytical layers using DBT with DuckDB.
 
@@ -24,7 +24,7 @@ The pipeline follows a layered data architecture:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/luizmatoss/tla-greencar-pipeline.git
+   git clone https://github.com/luizmatoss/the-gcar-pipeline.git
    cd tla-greencar-pipeline
    ```
 
@@ -202,6 +202,6 @@ RAW_FEATURES_GLOB=../data/fixtures/features_test.jsonl RAW_SUMMARY_GLOB=../data/
 
 ## License
 
-[Add license here, e.g., MIT]
+MIT License. See LICENSE file for details.
 
 Updated on 24 January 2026 to trigger GitHub Actions.
