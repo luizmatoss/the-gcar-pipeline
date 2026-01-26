@@ -7,3 +7,4 @@ select
   feature_value,
   section
 from {{ ref('bronze_features') }}
+where section in ('Interior Features', 'Entertainment')

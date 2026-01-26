@@ -7,7 +7,7 @@ with vf as (
     sum(case when manufacturer is null then 1 else 0 end) as null_manufacturer,
     sum(case when range is null then 1 else 0 end) as null_range,
     sum(case when feature_name is null then 1 else 0 end) as null_feature_name,
-    sum(case when section is null then 1 else 0 end) as null_section
+    sum(case when feature_value is null then 1 else 0 end) as null_feature_value
   from {{ ref('vehicle_features') }}
 ),
 vs as (
