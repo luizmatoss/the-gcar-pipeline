@@ -1,6 +1,6 @@
 {{ config(materialized='view') }}
 
-{% set raw_path = env_var('RAW_SUMMARY_GLOB', '../data/raw/summary_*.jsonl') }}
+{% set raw_path = env_var('RAW_SUMMARY_GLOB', '../data/raw/summary_*.jsonl') %}
 
 with src as (
   select * from read_json_auto('{{ raw_path }}')
