@@ -24,7 +24,7 @@ The pipeline follows a layered data architecture:
 
 1. Clone the repository:
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/luizmatoss/tla-greencar-pipeline.git
    cd tla-greencar-pipeline
    ```
 
@@ -35,7 +35,27 @@ The pipeline follows a layered data architecture:
 
 3. Install Playwright (for scraping):
    ```bash
-   playwright install
+   python -m playwright install
+   ```
+   Note: This installs browsers in headless mode, suitable for CI and local testing.
+
+4. (Optional) Set environment variables for DBT data paths:
+   Copy `.env.example` to `.env` and adjust paths as needed. Use `python-dotenv` or `direnv` to load automatically:
+   ```bash
+   cp .env.example .env
+   # Edit .env if needed
+   # Install python-dotenv: pip install python-dotenv
+   # Or use direnv: brew install direnv && direnv allow
+   ```
+   Or set manually:
+   ```bash
+   export RAW_FEATURES_GLOB='../data/raw/features_*.jsonl'
+   export RAW_SUMMARY_GLOB='../data/raw/summary_*.jsonl'
+   ```
+   For testing with fixtures, use:
+   ```bash
+   export RAW_FEATURES_GLOB='../data/fixtures/features_test.jsonl'
+   export RAW_SUMMARY_GLOB='../data/fixtures/summary_test.jsonl'
    ```
 
 ## Usage
@@ -63,6 +83,8 @@ curl -X POST "http://localhost:8000/scrape" \
 
 ### Run DBT
 
+DBT version: 1.11.2 (matches CI). Profiles are configured in `dbt/profiles.yml`.
+
 1. Navigate to the DBT folder:
    ```bash
    cd dbt
@@ -78,9 +100,14 @@ curl -X POST "http://localhost:8000/scrape" \
    dbt run --profiles-dir . --select gold
    ```
 
-4. Check tests (if any):
+4. To build and test all models (recommended for local testing):
    ```bash
-   dbt test --profiles-dir .
+   dbt build --profiles-dir .
+   ```
+
+5. For testing with fixtures (sets env vars inline):
+   ```bash
+   RAW_FEATURES_GLOB=../data/fixtures/features_test.jsonl RAW_SUMMARY_GLOB=../data/fixtures/summary_test.jsonl dbt build --profiles-dir .
    ```
 
 ## Testing and CI
@@ -110,7 +137,7 @@ pytest tests/ -v
 
 # DBT with fixtures
 cd dbt
-dbt build --profiles-dir . --vars '{"raw_features_glob":"../data/fixtures/features_test.jsonl","raw_summary_glob":"../data/fixtures/summary_test.jsonl"}'
+RAW_FEATURES_GLOB=../data/fixtures/features_test.jsonl RAW_SUMMARY_GLOB=../data/fixtures/summary_test.jsonl dbt build --profiles-dir .
 ```
 
 ### Local vs CI Differences
@@ -163,7 +190,7 @@ For local DBT testing with fixtures:
 
 ```bash
 cd dbt
-dbt build --profiles-dir . --vars '{"raw_features_glob":"../data/fixtures/features_test.jsonl","raw_summary_glob":"../data/fixtures/summary_test.jsonl"}'
+RAW_FEATURES_GLOB=../data/fixtures/features_test.jsonl RAW_SUMMARY_GLOB=../data/fixtures/summary_test.jsonl dbt build --profiles-dir .
 ```
 
 ## Next Steps
