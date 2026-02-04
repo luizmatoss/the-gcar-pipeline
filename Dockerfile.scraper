@@ -12,4 +12,6 @@ RUN playwright install --with-deps chromium
 COPY api/ ./api/
 COPY data/ ./data/
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD python -c "import os; exit(0 if os.path.exists('data/.last_scrape.json') else 1)" || exit 1
+
 CMD ["python", "-m", "api.run_scrape"]

@@ -193,6 +193,65 @@ cd dbt
 RAW_FEATURES_GLOB=../data/fixtures/features_test.jsonl RAW_SUMMARY_GLOB=../data/fixtures/summary_test.jsonl dbt build --profiles-dir .
 ```
 
+## Deploy Story
+
+This repo demonstrates a complete deployment pipeline: local development → containerization → cloud deployment.
+
+### Run Locally
+
+1. Install dependencies and Playwright browsers:
+   ```bash
+   pip install -r requirements.txt
+   python -m playwright install
+   ```
+
+2. Run the API:
+   ```bash
+   uvicorn api.main:app --reload
+   ```
+   Or run the scraper directly:
+   ```bash
+   python -m api.run_scrape
+   ```
+
+### Docker
+
+Build and run the scraper container locally:
+```bash
+docker build -f Dockerfile.scraper -t greencar-scraper:latest .
+docker run --rm -e AZURE_STORAGE_CONNECTION_STRING="${AZURE_STORAGE_CONNECTION_STRING}" greencar-scraper:latest
+```
+
+### Deploy to Azure (Example: ACR + ACI)
+
+1. Build, tag, and push to Azure Container Registry:
+   ```bash
+   az acr login --name <ACR_NAME>
+   docker tag greencar-scraper:latest <ACR_NAME>.azurecr.io/greencar-scraper:latest
+   docker push <ACR_NAME>.azurecr.io/greencar-scraper:latest
+   ```
+
+2. Deploy to Azure Container Instances:
+   ```bash
+   az container create --resource-group <RG> --name greencar-scraper \
+     --image <ACR_NAME>.azurecr.io/greencar-scraper:latest \
+     --environment-variables AZURE_STORAGE_CONNECTION_STRING="${AZURE_STORAGE_CONNECTION_STRING}"
+   ```
+
+For production, consider Azure Container Apps or Kubernetes for scaling and orchestration.
+
+## Production Concerns
+
+To make this portfolio-grade, we've implemented key production concerns:
+
+- **Retries & Exponential Backoff**: Scraping and blob uploads retry up to 3 times with exponential backoff (implemented in `api/run_scrape.py`).
+- **Idempotency / Incremental Loads**: Checkpoint file `data/.last_scrape.json` prevents re-processing and uploading duplicate data.
+- **Safe Uploads**: Blob uploads use `overwrite=True` and are retried for transient failures.
+- **Logging**: Structured logging for monitoring and debugging.
+- **Rate Limiting**: Single-page scrape with built-in delays; for multi-page, add concurrency limits.
+- **Monitoring & Alerts**: Recommend adding JSON logs, a healthcheck endpoint, and forwarding to Azure Monitor / Application Insights or Prometheus + Alertmanager.
+- **Secrets Management**: Use Azure Key Vault or managed identity for production credentials (avoid raw env vars).
+
 ## Next Steps
 
 - Add API authentication.
