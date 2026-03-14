@@ -4,8 +4,9 @@ WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir azure-storage-blob duckdb
 
+COPY api/ ./api/
+COPY config/ ./config/
 COPY dbt/ ./dbt/
 COPY scripts/ ./scripts/
 
