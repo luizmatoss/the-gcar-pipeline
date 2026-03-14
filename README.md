@@ -267,15 +267,9 @@ To make this portfolio-grade, we've implemented key production concerns:
 ## Next Steps
 
 - Add API authentication.
-- Implement automated tests.
-- Migrate to cloud database.
-- Add monitoring and structured logs.
-
-## Executive Documentation
-
-- Project overview for leadership: `docs/PROJECT_OVERVIEW.md`
-- Architecture diagram source (Mermaid): `docs/architecture.mmd`
-- Technical documentation (engineering-facing): `docs/TECHNICAL_DOCUMENTATION.md`
+- Expand integration and smoke test coverage.
+- Migrate to a cloud database / warehouse.
+- Add monitoring and alerting.
 
 ## License
 
