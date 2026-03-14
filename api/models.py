@@ -1,5 +1,6 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, HttpUrl
-from typing import Optional, Literal
 
 
 class ScrapeRequest(BaseModel):
@@ -7,8 +8,10 @@ class ScrapeRequest(BaseModel):
 
 
 class ScrapeResponse(BaseModel):
-    status: Literal["success"]
+    status: str
+    run_id: str
     features_file: str
     summary_file: str
     extracted_features: int
     extracted_summary_rows: int
+    warnings: Optional[List[str]] = None

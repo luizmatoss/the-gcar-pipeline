@@ -16,7 +16,7 @@ models:
       +materialized: view
     silver:
       +enabled: true
-      +materialized: view
+      +materialized: table
     gold:
       +enabled: true
       +materialized: table

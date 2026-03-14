@@ -8,3 +8,8 @@ orjson
 dbt-duckdb
 pytest
 httpx
+azure-storage-blob
+duckdb
+black
+ruff
+mypy

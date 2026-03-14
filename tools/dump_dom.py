@@ -8,6 +8,7 @@ This is useful for:
 """
 
 from pathlib import Path
+
 from playwright.sync_api import sync_playwright
 
 URL = "https://www.green.car/audi/e-tron-gt/saloon-electric"
