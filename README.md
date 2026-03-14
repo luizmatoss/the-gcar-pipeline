@@ -9,7 +9,7 @@ This project is a data pipeline for scraping and processing electric vehicle inf
 The pipeline follows a layered data architecture:
 
 - **Bronze**: Raw data extracted from scraping (JSONL).
-- **Silver**: Cleaned and normalized data (views).
+- **Silver**: Cleaned, normalized, and deduplicated current-state data (tables).
 - **Gold**: Aggregated and ready-for-consumption data (tables).
 
 ## Technologies
@@ -52,6 +52,14 @@ The pipeline follows a layered data architecture:
    export RAW_FEATURES_GLOB='../data/raw/features_*.jsonl'
    export RAW_SUMMARY_GLOB='../data/raw/summary_*.jsonl'
    ```
+   Optional runtime settings for batch/container jobs:
+   ```bash
+   export BLOB_CONTAINER_NAME='raw-data'
+   export DBT_PROJECT_DIR='./dbt'
+   export DBT_DATABASE_PATH='./dbt/greencar.duckdb'
+   export TEMP_RAW_DIR='./tmp/raw'
+   export TEMP_GOLD_DIR='./tmp/gold'
+   ```
    For testing with fixtures, use:
    ```bash
    export RAW_FEATURES_GLOB='../data/fixtures/features_test.jsonl'
@@ -70,15 +78,15 @@ The API will be available at `http://localhost:8000`.
 
 ### API Endpoint
 
-- **POST /scrape**: Triggers scraping of an allowed URL.
-  - Request body: `{"url": "https://example.com/vehicle"}`
-  - Response: Status, generated files, and extracted row counts.
+- **POST /scrape**: Triggers scraping of the configured active source URL.
+  - Request body: `{"url": "https://www.green.car/audi/e-tron-gt/saloon-electric"}`
+  - Response: status, `run_id`, generated files, extracted row counts, and optional warnings.
 
 Example with curl:
 ```bash
 curl -X POST "http://localhost:8000/scrape" \
      -H "Content-Type: application/json" \
-     -d '{"url": "https://green.car/example-vehicle"}'
+     -d '{"url": "https://www.green.car/audi/e-tron-gt/saloon-electric"}'
 ```
 
 ### Run DBT
@@ -119,7 +127,7 @@ This project uses test fixtures to ensure CI reliability without depending on ex
 - `features_test.jsonl`: Sample vehicle features data.
 - `summary_test.jsonl`: Sample vehicle summary data.
 
-These fixtures mirror the schema of real scraped data but with controlled, consistent content.
+These fixtures mirror the schema of real scraped data but with controlled, consistent content, including repeated snapshots to validate silver/gold deduplication behavior.
 
 ### CI Pipeline
 
@@ -219,7 +227,10 @@ This repo demonstrates a complete deployment pipeline: local development → con
 Build and run the scraper container locally:
 ```bash
 docker build -f Dockerfile.scraper -t greencar-scraper:latest .
-docker run --rm -e AZURE_STORAGE_CONNECTION_STRING="${AZURE_STORAGE_CONNECTION_STRING}" greencar-scraper:latest
+docker run --rm \
+  -e AZURE_STORAGE_CONNECTION_STRING="${AZURE_STORAGE_CONNECTION_STRING}" \
+  -e BLOB_CONTAINER_NAME="${BLOB_CONTAINER_NAME:-raw-data}" \
+  greencar-scraper:latest
 ```
 
 ### Deploy to Azure (Example: ACR + ACI)
@@ -248,6 +259,7 @@ To make this portfolio-grade, we've implemented key production concerns:
 - **Idempotency / Incremental Loads**: Checkpoint file `data/.last_scrape.json` prevents re-processing and uploading duplicate data.
 - **Safe Uploads**: Blob uploads use `overwrite=True` and are retried for transient failures.
 - **Logging**: Structured logging for monitoring and debugging.
+- **Current-State Models**: Bronze preserves snapshot history, while silver and gold expose the latest deduplicated state per business key.
 - **Rate Limiting**: Single-page scrape with built-in delays; for multi-page, add concurrency limits.
 - **Monitoring & Alerts**: Recommend adding JSON logs, a healthcheck endpoint, and forwarding to Azure Monitor / Application Insights or Prometheus + Alertmanager.
 - **Secrets Management**: Use Azure Key Vault or managed identity for production credentials (avoid raw env vars).
@@ -259,8 +271,12 @@ To make this portfolio-grade, we've implemented key production concerns:
 - Migrate to cloud database.
 - Add monitoring and structured logs.
 
+## Executive Documentation
+
+- Project overview for leadership: `docs/PROJECT_OVERVIEW.md`
+- Architecture diagram source (Mermaid): `docs/architecture.mmd`
+- Technical documentation (engineering-facing): `docs/TECHNICAL_DOCUMENTATION.md`
+
 ## License
 
 MIT License. See LICENSE file for details.
-
-Updated on 24 January 2026 to trigger GitHub Actions.

@@ -87,6 +87,10 @@ models:
       - name: table_name
         tests:
           - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: ['gold.vehicle_features', 'gold.vehicle_summary']
       - name: total_rows
         tests:
           - not_null

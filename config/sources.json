@@ -1,0 +1,19 @@
+{
+  "sources": [
+    {
+      "source_id": "green-car-audi-e-tron-gt",
+      "url": "https://www.green.car/audi/e-tron-gt/saloon-electric",
+      "active": true,
+      "required_sections": [
+        "Interior Features",
+        "Entertainment",
+        "Driver Convenience",
+        "Security",
+        "Exterior Features",
+        "Passive Safety",
+        "Wheels",
+        "Engine/Drivetrain/Suspension"
+      ]
+    }
+  ]
+}

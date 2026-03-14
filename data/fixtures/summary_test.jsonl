@@ -1,2 +1,6 @@
 {"scraped_at":"2026-01-24T00:00:00Z","page_url":"https://example","manufacturer":"Audi","vehicle_range":"e-tron gt","summary_key":"Range (WLTP)","summary_value":"300 miles"}
 {"scraped_at":"2026-01-24T00:00:00Z","page_url":"https://example","manufacturer":"Audi","vehicle_range":"e-tron gt","summary_key":"Battery","summary_value":"93.4 kWh"}
+{"scraped_at":"2026-01-25T00:00:00Z","page_url":"https://example","manufacturer":"audi","vehicle_range":"e-tron gt","summary_key":"Range (WLTP)","summary_value":"320 miles"}
+{"scraped_at":"2026-01-25T00:00:00Z","page_url":"https://example","manufacturer":"audi","vehicle_range":"e-tron gt","summary_key":"Battery","summary_value":"93.4 kWh"}
+{"scraped_at":"2026-01-25T00:00:00Z","page_url":"https://example-b","manufacturer":"AUDI","vehicle_range":"e-tron gt","summary_key":"Home Charge","summary_value":"10 hours"}
+{"scraped_at":"2026-01-25T00:00:00Z","page_url":"https://example-a","manufacturer":"Audi","vehicle_range":"e-tron gt","summary_key":"Home Charge","summary_value":"8 hours"}
