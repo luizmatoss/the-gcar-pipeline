@@ -35,7 +35,11 @@ jobs:
 
     - name: Run unit tests
       run: |
-        python -m pytest tests/ -v
+        python -m pytest tests/ -v -m "not smoke"
+
+    - name: Run smoke tests
+      run: |
+        python -m pytest -m smoke -v
 
     - name: List fixtures
       run: |
