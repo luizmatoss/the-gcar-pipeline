@@ -53,7 +53,7 @@ def test_smoke_api_to_gold_models(tmp_path, monkeypatch):
             "--profiles-dir",
             ".",
             "--select",
-            "vehicle_summary vehicle_features",
+            "+vehicle_summary +vehicle_features",
         ],
         cwd=dbt_dir,
         env=env,
