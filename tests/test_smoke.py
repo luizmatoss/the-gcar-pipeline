@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import duckdb
+import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app, settings
@@ -12,6 +13,7 @@ from api.main import app, settings
 FIXTURE_HTML = Path(__file__).parent / "fixtures" / "green_car_vehicle.html"
 
 
+@pytest.mark.smoke
 def test_smoke_api_to_gold_models(tmp_path, monkeypatch):
     # Keep smoke-test artifacts isolated from normal local raw files.
     raw_dir = tmp_path / "raw"
