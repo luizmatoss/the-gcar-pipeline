@@ -65,12 +65,14 @@ def test_smoke_api_to_gold_models(tmp_path, monkeypatch):
 
     con = duckdb.connect(str(dbt_dir / "greencar.duckdb"))
 
-    vehicle_summary_count = con.execute(
-        "select count(*) from vehicle_summary"
-    ).fetchone()[0]
-    vehicle_features_count = con.execute(
-        "select count(*) from vehicle_features"
-    ).fetchone()[0]
+    summary_row = con.execute("select count(*) from vehicle_summary").fetchone()
+    features_row = con.execute("select count(*) from vehicle_features").fetchone()
+
+    assert summary_row is not None
+    assert features_row is not None
+
+    vehicle_summary_count = summary_row[0]
+    vehicle_features_count = features_row[0]
 
     assert vehicle_summary_count > 0
     assert vehicle_features_count > 0
