@@ -40,6 +40,12 @@ class RuntimeSettings(BaseModel):
     retry_tries: int = 3
     retry_backoff_seconds: int = 2
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
+    app_env: Literal["development", "staging", "production"] = "development"
+
+    @property
+    def docs_enabled(self) -> bool:
+        """Disable docs/openapi in production to reduce attack surface."""
+        return self.app_env != "production"
 
 
 class AppSettings(BaseModel):
@@ -111,6 +117,7 @@ def load_settings() -> AppSettings:
         retry_tries=int(os.getenv("RETRY_TRIES", "3")),
         retry_backoff_seconds=int(os.getenv("RETRY_BACKOFF_SECONDS", "2")),
         log_level=log_level,
+        app_env=os.getenv("APP_ENV", "development").lower(),
     )
     _ensure_runtime_dirs(runtime)
     return AppSettings(

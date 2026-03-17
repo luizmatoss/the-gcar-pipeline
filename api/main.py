@@ -13,7 +13,19 @@ settings = get_settings()
 configure_logging(settings.runtime.log_level)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="TLA Green.Car Scraper")
+
+def _docs_config() -> dict[str, str | None]:
+    """Configure docs routes based on runtime environment."""
+    if settings.runtime.docs_enabled:
+        return {
+            "docs_url": "/docs",
+            "redoc_url": "/redoc",
+            "openapi_url": "/openapi.json",
+        }
+    return {"docs_url": None, "redoc_url": None, "openapi_url": None}
+
+
+app = FastAPI(title="TLA Green.Car Scraper", **_docs_config())
 
 
 @app.post("/scrape", response_model=ScrapeResponse)
