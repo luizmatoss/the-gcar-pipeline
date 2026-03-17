@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from api.main import app, settings
+from api.main import _docs_config, app, settings
 from api.scraper import PlaywrightTimeoutError, ScrapeResult
 
 client = TestClient(app)
@@ -43,7 +43,27 @@ def test_scrape_valid_url_returns_run_metadata(mock_write_jsonl, mock_scrape_pag
     assert data["warnings"] == ["summary_extract_empty"]
     assert "summary_" in data["summary_file"]
     assert "features_" in data["features_file"]
+    assert "/" not in data["summary_file"]
+    assert "/" not in data["features_file"]
     assert mock_write_jsonl.call_count == 2
+
+
+def test_docs_config_disables_docs_in_production(monkeypatch):
+    monkeypatch.setattr(settings.runtime, "app_env", "production")
+    assert _docs_config() == {
+        "docs_url": None,
+        "redoc_url": None,
+        "openapi_url": None,
+    }
+
+
+def test_docs_config_enables_docs_outside_production(monkeypatch):
+    monkeypatch.setattr(settings.runtime, "app_env", "development")
+    assert _docs_config() == {
+        "docs_url": "/docs",
+        "redoc_url": "/redoc",
+        "openapi_url": "/openapi.json",
+    }
 
 
 @patch("api.main.scrape_page")

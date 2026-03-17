@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
@@ -13,7 +14,30 @@ settings = get_settings()
 configure_logging(settings.runtime.log_level)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="TLA Green.Car Scraper")
+
+def _docs_config() -> dict[str, str | None]:
+    """Configure docs routes based on runtime environment."""
+    if settings.runtime.docs_enabled:
+        return {
+            "docs_url": "/docs",
+            "redoc_url": "/redoc",
+            "openapi_url": "/openapi.json",
+        }
+    return {"docs_url": None, "redoc_url": None, "openapi_url": None}
+
+
+def _public_file_reference(path: Path) -> str:
+    """Return filename only to avoid exposing server directory layout."""
+    return path.name
+
+
+_docs = _docs_config()
+app = FastAPI(
+    title="TLA Green.Car Scraper",
+    docs_url=_docs["docs_url"],
+    redoc_url=_docs["redoc_url"],
+    openapi_url=_docs["openapi_url"],
+)
 
 
 @app.post("/scrape", response_model=ScrapeResponse)
@@ -86,8 +110,8 @@ def scrape(req: ScrapeRequest):
     return ScrapeResponse(
         status="success",
         run_id=run_id,
-        summary_file=str(summary_file),
-        features_file=str(features_file),
+        summary_file=_public_file_reference(summary_file),
+        features_file=_public_file_reference(features_file),
         extracted_summary_rows=len(result.summary),
         extracted_features=len(result.features),
         warnings=result.warnings or None,
