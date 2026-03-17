@@ -1,6 +1,7 @@
 FROM python:3.11-slim
 
 WORKDIR /app
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -11,6 +12,13 @@ RUN playwright install --with-deps chromium
 COPY api/ ./api/
 COPY config/ ./config/
 COPY data/ ./data/
+
+RUN addgroup --system appgroup \
+    && adduser --system --ingroup appgroup --home /home/appuser appuser \
+    && mkdir -p /app/data /app/tmp /ms-playwright \
+    && chown -R appuser:appgroup /app /ms-playwright
+
+USER appuser
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD python -c "import os; raise SystemExit(0 if os.path.exists('data/raw/.last_scrape.json') else 1)"
 

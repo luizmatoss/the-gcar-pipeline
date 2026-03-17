@@ -10,4 +10,11 @@ COPY config/ ./config/
 COPY dbt/ ./dbt/
 COPY scripts/ ./scripts/
 
+RUN addgroup --system appgroup \
+    && adduser --system --ingroup appgroup --home /home/appuser appuser \
+    && mkdir -p /app/tmp /app/dbt \
+    && chown -R appuser:appgroup /app
+
+USER appuser
+
 CMD ["python", "scripts/run_dbt_job.py"]
