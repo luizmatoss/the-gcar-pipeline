@@ -55,6 +55,10 @@ The pipeline follows a layered data architecture:
    Optional runtime settings for batch/container jobs:
    ```bash
    export BLOB_CONTAINER_NAME='raw-data'
+   export APP_ENV='development'
+   export MIN_SCRAPE_INTERVAL_SECONDS='600'
+   export RATE_LIMIT_REQUESTS='20'
+   export RATE_LIMIT_WINDOW_SECONDS='60'
    export DBT_PROJECT_DIR='./dbt'
    export DBT_DATABASE_PATH='./dbt/greencar.duckdb'
    export TEMP_RAW_DIR='./tmp/raw'
@@ -78,9 +82,16 @@ The API will be available at `http://localhost:8000`.
 
 ### API Endpoint
 
-- **POST /scrape**: Triggers scraping of the configured active source URL.
+- **POST /scrape**: Triggers a guarded refresh of the configured active source URL.
   - Request body: `{"url": "https://www.green.car/audi/e-tron-gt/saloon-electric"}`
-  - Response: status, `run_id`, generated files, extracted row counts, and optional warnings.
+  - Response: status, `run_id`, generated files, extracted row counts, optional warnings, and optional `message`.
+  - Possible outcomes:
+    - `200 success`: scrape executed and files were generated.
+    - `200 skipped`: recent data already exists (`message="skipped_fresh_data"`).
+    - `409`: another scrape is already in progress for the same source.
+    - `429`: rate limit exceeded.
+
+When `APP_ENV=production`, API docs endpoints are disabled (`/docs`, `/redoc`, `/openapi.json`).
 
 Example with curl:
 ```bash
@@ -136,6 +147,7 @@ The GitHub Actions CI pipeline runs on every push/PR to `main`:
 1. **Unit Tests**: Runs Python unit tests with pytest.
 2. **DBT Build**: Uses fixtures to build and test DBT models (bronze, silver, gold layers).
 3. **Data Quality**: Validates schemas and runs automated tests defined in `schema.yml`.
+4. **Container Build/Push**: ACR build-and-push workflow is currently manual (`workflow_dispatch`) until Azure credentials are configured.
 
 To run CI locally:
 
@@ -178,27 +190,13 @@ tla-greencar-pipeline/
 └── README.md              # This documentation
 ```
 
-## Testing
-
-Run unit tests with pytest:
+## Quick Validation Commands
 
 ```bash
-pytest tests/
-```
-
-Or with verbose output:
-
-```bash
-pytest tests/ -v
-```
-
-### DBT Testing
-
-For local DBT testing with fixtures:
-
-```bash
-cd dbt
-RAW_FEATURES_GLOB=../data/fixtures/features_test.jsonl RAW_SUMMARY_GLOB=../data/fixtures/summary_test.jsonl dbt build --profiles-dir .
+# Lint + types + tests
+ruff check api tests
+mypy api tests
+pytest -q
 ```
 
 ## Deploy Story
@@ -260,7 +258,8 @@ To make this portfolio-grade, we've implemented key production concerns:
 - **Safe Uploads**: Blob uploads use `overwrite=True` and are retried for transient failures.
 - **Logging**: Structured logging for monitoring and debugging.
 - **Current-State Models**: Bronze preserves snapshot history, while silver and gold expose the latest deduplicated state per business key.
-- **Rate Limiting**: Single-page scrape with built-in delays; for multi-page, add concurrency limits.
+- **API Abuse Guardrails**: Per-client rate limit (`429`), in-flight lock per source (`409`), and cooldown-based skip to avoid unnecessary expensive scrape runs.
+- **Container Security Baseline**: Scraper and DBT images run as non-root users.
 - **Monitoring & Alerts**: Recommend adding JSON logs, a healthcheck endpoint, and forwarding to Azure Monitor / Application Insights or Prometheus + Alertmanager.
 - **Secrets Management**: Use Azure Key Vault or managed identity for production credentials (avoid raw env vars).
 
@@ -270,6 +269,7 @@ To make this portfolio-grade, we've implemented key production concerns:
 - Expand integration and smoke test coverage.
 - Migrate to a cloud database / warehouse.
 - Add monitoring and alerting.
+- Add distributed rate limiting/locking (e.g., Redis or gateway policies) for multi-instance scaling.
 
 ## License
 
