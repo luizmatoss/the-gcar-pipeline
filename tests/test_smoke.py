@@ -33,8 +33,8 @@ def test_smoke_api_to_gold_models(tmp_path, monkeypatch):
     assert response.status_code == 200
     payload = response.json()
 
-    summary_file = Path(payload["summary_file"])
-    features_file = Path(payload["features_file"])
+    summary_file = raw_dir / payload["summary_file"]
+    features_file = raw_dir / payload["features_file"]
 
     assert payload["status"] == "success"
     assert payload["run_id"]

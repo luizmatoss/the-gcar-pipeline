@@ -43,6 +43,8 @@ def test_scrape_valid_url_returns_run_metadata(mock_write_jsonl, mock_scrape_pag
     assert data["warnings"] == ["summary_extract_empty"]
     assert "summary_" in data["summary_file"]
     assert "features_" in data["features_file"]
+    assert "/" not in data["summary_file"]
+    assert "/" not in data["features_file"]
     assert mock_write_jsonl.call_count == 2
 
 
