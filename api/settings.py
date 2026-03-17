@@ -18,6 +18,9 @@ DEFAULT_TMP_RAW_DIR = DEFAULT_TMP_ROOT / "raw"
 DEFAULT_TMP_GOLD_DIR = DEFAULT_TMP_ROOT / "gold"
 
 
+AppEnv = Literal["development", "staging", "production"]
+
+
 class SourceDefinition(BaseModel):
     source_id: str
     url: str
@@ -40,7 +43,7 @@ class RuntimeSettings(BaseModel):
     retry_tries: int = 3
     retry_backoff_seconds: int = 2
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
-    app_env: Literal["development", "staging", "production"] = "development"
+    app_env: AppEnv = "development"
 
     @property
     def docs_enabled(self) -> bool:
@@ -93,6 +96,13 @@ def _ensure_runtime_dirs(runtime: RuntimeSettings) -> None:
     runtime.temp_gold_dir.mkdir(parents=True, exist_ok=True)
 
 
+def _parse_app_env(value: str) -> AppEnv:
+    normalized = value.lower().strip()
+    if normalized in {"development", "staging", "production"}:
+        return cast(AppEnv, normalized)
+    return "development"
+
+
 def load_settings() -> AppSettings:
     log_level = cast(
         Literal["DEBUG", "INFO", "WARNING", "ERROR"],
@@ -117,7 +127,7 @@ def load_settings() -> AppSettings:
         retry_tries=int(os.getenv("RETRY_TRIES", "3")),
         retry_backoff_seconds=int(os.getenv("RETRY_BACKOFF_SECONDS", "2")),
         log_level=log_level,
-        app_env=os.getenv("APP_ENV", "development").lower(),
+        app_env=_parse_app_env(os.getenv("APP_ENV", "development")),
     )
     _ensure_runtime_dirs(runtime)
     return AppSettings(

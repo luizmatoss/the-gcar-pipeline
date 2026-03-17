@@ -31,7 +31,13 @@ def _public_file_reference(path: Path) -> str:
     return path.name
 
 
-app = FastAPI(title="TLA Green.Car Scraper", **_docs_config())
+_docs = _docs_config()
+app = FastAPI(
+    title="TLA Green.Car Scraper",
+    docs_url=_docs["docs_url"],
+    redoc_url=_docs["redoc_url"],
+    openapi_url=_docs["openapi_url"],
+)
 
 
 @app.post("/scrape", response_model=ScrapeResponse)
