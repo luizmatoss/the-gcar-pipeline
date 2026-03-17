@@ -44,6 +44,9 @@ class RuntimeSettings(BaseModel):
     retry_backoff_seconds: int = 2
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     app_env: AppEnv = "development"
+    min_scrape_interval_seconds: int = 600
+    rate_limit_requests: int = 20
+    rate_limit_window_seconds: int = 60
 
     @property
     def docs_enabled(self) -> bool:
@@ -128,6 +131,11 @@ def load_settings() -> AppSettings:
         retry_backoff_seconds=int(os.getenv("RETRY_BACKOFF_SECONDS", "2")),
         log_level=log_level,
         app_env=_parse_app_env(os.getenv("APP_ENV", "development")),
+        min_scrape_interval_seconds=int(
+            os.getenv("MIN_SCRAPE_INTERVAL_SECONDS", "600")
+        ),
+        rate_limit_requests=int(os.getenv("RATE_LIMIT_REQUESTS", "20")),
+        rate_limit_window_seconds=int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60")),
     )
     _ensure_runtime_dirs(runtime)
     return AppSettings(

@@ -15,3 +15,4 @@ class ScrapeResponse(BaseModel):
     extracted_features: int
     extracted_summary_rows: int
     warnings: Optional[List[str]] = None
+    message: Optional[str] = None
